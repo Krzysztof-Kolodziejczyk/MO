@@ -4,6 +4,13 @@
 
 using namespace std;
 
+/*
+ *  Napisz program w języku „C/C++”, umożliwiający „doświadczalne” wyznaczenie liczby bitów
+    mantysy oraz tzw. epsylona maszynowego, dla zmiennych typu float i double, tj. najmniejszej liczby
+     takiej, że fl( + 1) > 1. Aby znaleźć odpowiedź na pytanie jak napisać taki program, zacznij od
+    wyjaśnienia kwestii jaki jest związek  z precyzją arytmetyki.
+ */
+
 void float_precission(){
     int t = 0;
     float e = 1.f;

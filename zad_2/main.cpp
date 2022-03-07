@@ -6,6 +6,23 @@
 
 using namespace std;
 
+/*
+ *  Zaimplementuj w języku „C/C++” algorytm obliczający przybliżone wartości funkcji
+    f(x) = [1 - exp(-x)]/x dla x E [10^30, 10^9], korzystając z funkcji standardowej exp(). W oparciu o
+    zbiór dokładnych wartości tej funkcji, udostępniony przez prowadzącego zajęcia, zbadaj jak
+    zmieniają się błędy względne przybliżenia funkcji w tym algorytmie, w zależności od x. W tym celu
+    wykonaj rysunek przedstawiający zależność logarytmu dziesiętnego z bezwzględnej wartości błędu
+    względnego od logarytmu dziesiętnego z x. Z wykresu odczytaj zakres zmiennej x, w którym błąd
+    względny pozostaje na poziomie błędu reprezentacji, oraz zakres zmiennej x, w którym błąd
+    względny jest większy. Wyjaśnij przyczynę obserwowanych zmian błędów. Na tej podstawie
+    zaproponuj alternatywny sposób obliczania wartości funkcji f(x) w sytuacjach gdy obserwowany
+    błąd jest duży. Dokonaj stosownej modyfikacji programu, tak aby uzyskać błąd względny na
+    poziomie błędu reprezentacji (czyli tzw. dokładność maszynową) dla dowolnego x E [10^30, 10^9].
+    W obliczeniach zastosuj zmienne podwójnej precyzji. Do wykonania rysunku w tym ćwiczeniu (a
+    także w niektórych dalszych ćwiczeniach) najlepiej użyć programu GNUPLOT (dostępnego za
+    darmo z Internetu).
+ */
+
 const int X_NBR = 3900;
 double X_array[X_NBR];
 double log_array[X_NBR];
