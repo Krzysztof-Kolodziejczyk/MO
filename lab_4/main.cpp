@@ -95,7 +95,7 @@ void buildFunctionVector(double x, double y, double z) {
 
 double det3x3(double **matrix) {
     return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[0][2]) +
+           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
            matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
 }
 
@@ -129,7 +129,7 @@ void calculateDelta(){
 }
 
 void printVectorXn() {
-    cout << "[" << setprecision(7) << xn[0] << ", " << xn[1] << " ," << xn[2] << "]" << endl;
+    cout << "x = [" << setprecision(7) << xn[0] << ", " << xn[1] << " ," << xn[2] << "]" << endl;
 }
 
 int main() {
@@ -154,8 +154,9 @@ int main() {
         xn[1] -= delta[1];
         xn[2] -= delta[2];
 
-        cout << "i = " << i << "\t" << setprecision(7) << "x_error = " << max(delta) << "\t" << "reziduum = " << max(functionVector) << "\t";
+        cout << "i = " << i << "\t\t" << setprecision(7) << "x_error = " << max(delta) << "\t\t" << "reziduum = " << max(functionVector) << "\t\t";
+        //cout << i << " " << det << " " <<  det_x << " " << det_y << " " << det_z << endl;
         printVectorXn();
         i++;
-    } while (((max(delta) > TOLX) || (max(functionVector) > TOLF)) && i < NMAX);
+    } while ((max(delta) > TOLX) || (max(functionVector) > TOLF) && i < NMAX);
 }

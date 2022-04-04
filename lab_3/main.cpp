@@ -41,7 +41,7 @@ void picard() {
     do{
         x0 = x;
         x = fi_fun_1(x);
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs(x - x0) << "\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs(x - x0) << "\t\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
     }while (i++ <= ITER && !(fabs(x - x0) < TOLX && fabs(fun_1(x)) < TOLF));
 
     cout << endl << endl << "fun 2 " << endl;
@@ -49,7 +49,7 @@ void picard() {
     do{
         x0 = x;
         x = fi_fun_2(x);
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs(x - x0) << "\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs(x - x0) << "\t\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
     }while (i++ <= ITER && !(fabs(x - x0) < TOLX && fabs(fun_1(x)) < TOLF));
 
     cout << "\n-----------------------  Picard - koniec -----------------------\n\n\n\n";
@@ -71,7 +71,7 @@ void bisekcja() {
             cout << "brak rozwiazania w danym przedziale" << endl;
             break;
         }
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs((b - a) / 2.) << "\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs((b - a) / 2.) << "\t\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
     } while (i++ <= ITER && !(fabs((b - a) / 2.) <= TOLX && fabs(fun_1(x)) <= TOLF));
 
 
@@ -89,7 +89,7 @@ void bisekcja() {
             cout << "brak rozwiazania w danym przedziale" << endl;
             break;
         }
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs((b - a) / 2.) << "\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
+        cout << "i = " << i << "\t\tx = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs((b - a) / 2.) << "\t\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
     } while (i++ <= ITER && !(fabs((b - a) / 2.) < TOLX && fabs(fun_2(x)) < TOLF));
 
     cout << "\n-----------------------  Bisekcja - koniec  -----------------------\n\n\n\n";
@@ -105,7 +105,7 @@ void newton() {
     do{
         x0 = x;
         x = x - (fun_1(x) / fun_1_dx(x));
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs(x - x0) << "\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs(x - x0) << "\t\t reziduum = " << setw(10) <<  fabs(fun_1(x)) << endl;
     }while (i++ <= ITER && !(fabs(x - x0) < TOLX && fabs(fun_1(x)) < TOLF));
 
     cout << endl << endl << "fun 2 " << endl;
@@ -113,7 +113,7 @@ void newton() {
     do{
         x0 = x;
         x = x - (fun_2(x) / fun_2_dx(x));
-        cout << "i = " << i << "\t x = " << setw(10) << x << "\t x_error = " << setw(10) << fabs(x - x0) << "\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x << "\t\t x_error = " << setw(10) << fabs(x - x0) << "\t\t reziduum = " << setw(10) <<  fabs(fun_2(x)) << endl;
     }while (i++ <= ITER && !(fabs(x - x0) < TOLX && fabs(fun_2(x)) < TOLF));
 
     cout << "\n-----------------------  Newton - koniec  -----------------------\n\n\n\n";
@@ -129,7 +129,7 @@ void sieczne() {
         x0 = x1;
         x1 = x2;
         x2 = x1 - (fun_1(x1) * (x1 - x0)) / (fun_1(x1) - fun_1(x0));
-        cout << "i = " << i << "\t x = " << setw(10) << x2 << "\t x_error = " << setw(10) << fabs(x2 - x1) << "\t reziduum = " << setw(10) <<  fabs(fun_1(x2)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x2 << "\t\t x_error = " << setw(10) << fabs(x2 - x1) << "\t\t reziduum = " << setw(10) <<  fabs(fun_1(x2)) << endl;
     }while (i++ <= ITER && !(fabs(x2 - x1) < TOLX && fabs(fun_1(x2)) < TOLF));
 
     x1 = .5, x2 = .7;
@@ -138,7 +138,7 @@ void sieczne() {
         x0 = x1;
         x1 = x2;
         x2 = x1 - (fun_2(x1) * (x1 - x0)) / (fun_2(x1) - fun_2(x0));
-        cout << "i = " << i << "\t x = " << setw(10) << x2 << "\t x_error = " << setw(10) << fabs(x2 - x1) << "\t reziduum = " << setw(10) <<  fabs(fun_2(x2)) << endl;
+        cout << "i = " << i << "\t\t x = " << setw(10) << x2 << "\t\t x_error = " << setw(10) << fabs(x2 - x1) << "\t\t reziduum = " << setw(10) <<  fabs(fun_2(x2)) << endl;
     }while (i++ <= ITER && !(fabs(x2 - x1) < TOLX && fabs(fun_2(x2)) < TOLF));
 
     cout << "\n-----------------------  Sieczne - koniec  -----------------------\n\n\n\n";
