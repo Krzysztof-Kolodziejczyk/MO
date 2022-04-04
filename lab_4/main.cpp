@@ -60,8 +60,8 @@ double f3_dx(double x) {
     return 2.0 * x;
 }
 
-double f3_dy(double y) {
-    return -1.0 * y;
+double f3_dy() {
+    return -1.0;
 }
 
 double f3_dz() {
@@ -82,7 +82,7 @@ void buildJacobiMatrix(double x, double y, double z) {
     jacobiMatrix[1][2] = f2_dz();
 
     jacobiMatrix[2][0] = f3_dx(z);
-    jacobiMatrix[2][1] = f3_dy(y);
+    jacobiMatrix[2][1] = f3_dy();
     jacobiMatrix[2][2] = f3_dz();
 }
 
@@ -138,7 +138,6 @@ int main() {
 
     jacobiMatrix = init3x3matrix();
     tmpMatrix = init3x3matrix();
-
     do {
         buildJacobiMatrix(xn[0], xn[1], xn[2]);
         buildFunctionVector(xn[0], xn[1], xn[2]);
@@ -155,10 +154,8 @@ int main() {
         xn[1] -= delta[1];
         xn[2] -= delta[2];
 
-        cout << "i = " << i << "\t" << setprecision(7) << "delta = " << max(delta) << "\t" << "vector = " << max(functionVector) << "\t";
+        cout << "i = " << i << "\t" << setprecision(7) << "x_error = " << max(delta) << "\t" << "reziduum = " << max(functionVector) << "\t";
         printVectorXn();
         i++;
     } while (((max(delta) > TOLX) || (max(functionVector) > TOLF)) && i < NMAX);
-
-    return 0;
 }
