@@ -60,7 +60,7 @@ void build_input_arrays() {
 }
 
 double apprioximate_fun(double x) {
-    return (1. - exp(-1. * x)) / x;
+    return (1.0 - exp(-1.0 * x)) / x;
 }
 
 double relative_error(double af, double ef) {
@@ -68,13 +68,17 @@ double relative_error(double af, double ef) {
 }
 
 double get_epsilon_from_double() {
-    double e = 1.;
-    while (e / 2 + 1.0 > 1.0) {
-        e = e / 2;
+    double e = 1.0;
+    while (e / 2.0 + 1.0 > 1.0) {
+        e = e / 2.0;
     }
     return e;
 }
 
+// w pliku log_outputs_expansion czasem wystepuje -inf. dzieje sie tak dlatego
+// że roznica f_obliczone i f_prawidlowe wynosi zero (takie same bity) co skutkuje
+// log10(0) = -inf. niekiedy wystepuje tez mala liczba rzedu 10^-16 ktora moze byc
+// zwiazana z reprezentacja zmiennoprzecinkowa liczby (arytmetyka ni)
 double fixed_function(double x) {
     double sum = 0.;
     double factor = 1.;
