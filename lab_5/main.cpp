@@ -16,11 +16,7 @@ public:
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (i == j) {
-                    matrixL[i][j] = 1;
-                } else {
-                    matrixL[i][j] = 0;
-                }
+                matrixL[i][j] = 0;
             }
         }
 
@@ -32,10 +28,7 @@ public:
     }
 };
 
-// zakładam że macierz kwadratowa n x n
-// początkowo p ma być 0
-// robimy dopóki p < n;
-void gauss_recur(double **matrix, double **matrixL, int *indexes, int p, int n) {
+void gauss_recur(double **matrix, double **matrixL, int *indexes, int n, int p = 0) {
     if (p < n - 1) {
         for (int i = p + 1; i < n; i++) {
             // częściowy wybór elementu podstawowego
@@ -62,13 +55,23 @@ void gauss_recur(double **matrix, double **matrixL, int *indexes, int p, int n) 
                 matrix[indexes[i]][j] -= matrix[indexes[p]][j] * coeff;
             }
         }
-        gauss_recur(matrix, matrixL, indexes, p + 1, n);
+        gauss_recur(matrix, matrixL, indexes, n, p + 1);
     }
 }
 
 GaussReturnType gauss(double **matrix, int n) {
     auto result = GaussReturnType(n);
-    gauss_recur(matrix, result.matrixL, result.indexes, 0, n);
+    gauss_recur(matrix, result.matrixL, result.indexes, n);
+
+    // wypełnienie macierzy L jednykami na przekątnej
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                result.matrixL[result.indexes[i]][j] = 1;
+            }
+        }
+    }
+
     return result;
 }
 
@@ -85,10 +88,10 @@ double *solve(double **matrix, const double *vector, const int *indexes, int n) 
     double sum;
     for (int i = n - 1; i >= 0; i--) {
         sum = 0;
-        for(int j=i+1; j < n; j++){
-            sum += matrix[indexes[i]][j]*result[j];
+        for (int j = i + 1; j < n; j++) {
+            sum += matrix[indexes[i]][j] * result[j];
         }
-        result[i] = (vector[indexes[i]] - sum)/matrix[indexes[i]][i];
+        result[i] = (vector[indexes[i]] - sum) / matrix[indexes[i]][i];
     }
     return result;
 }
@@ -96,33 +99,21 @@ double *solve(double **matrix, const double *vector, const int *indexes, int n) 
 int main() {
 
     int n = 4;
-    auto **m = new double *[n];
-    m[0] = new double[n]{1, -20, 30, -4};
-    m[1] = new double[n]{2, -40, -6, 50};
-    m[2] = new double[n]{9, -180, 11, -12};
-    m[3] = new double[n]{-16, 15, -140, 13};
-    auto *vector = new double[n]{35, 104, -366, -354};
+    auto **A = new double *[n];
+    A[0] = new double[n]{1, -20, 30, -4};
+    A[1] = new double[n]{2, -40, -6, 50};
+    A[2] = new double[n]{9, -180, 11, -12};
+    A[3] = new double[n]{-16, 15, -140, 13};
+    auto *b = new double[n]{35, 104, -366, -354};
 
-    MatrixPrinter::printMatrix(m, n);
-    cout << endl << endl;
+    auto gaussReturnType = gauss(A, n);
+    vectorB(b, gaussReturnType.matrixL, gaussReturnType.indexes, n);
+    auto res = solve(A, b, gaussReturnType.indexes, n);
 
-    auto x = gauss(m, n);
-    MatrixPrinter::printMatrix(m, n);
-
-    cout << endl << endl;
-    MatrixPrinter::printMatrix(x.matrixL, n);
-
-    vectorB(vector, x.matrixL, x.indexes, n);
-    cout << endl << endl;
-
-    for(int i=0; i<n; i++){
-        cout << vector[i] << "\t";
-    }
-    cout << endl << endl;
-
-    auto res = solve(m, vector, x.indexes, n);
-    for(int i=0; i<n; i++){
-        cout << res[i] << "\t";
-    }
+    MatrixPrinter::printMatrix(A, nullptr, n, "Macierz A");
+    MatrixPrinter::printMatrix(A, gaussReturnType.indexes, n, "Macierz U");
+    MatrixPrinter::printMatrix(gaussReturnType.matrixL, gaussReturnType.indexes, n, "Macierz L");
+    MatrixPrinter::printVector(b, gaussReturnType.indexes, n, "Wektor b");
+    MatrixPrinter::printVector(res, gaussReturnType.indexes, n, "Wektor X");
 
 }

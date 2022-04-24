@@ -32,7 +32,7 @@ double exp_array[X_NBR];
 void build_input_arrays() {
     ifstream file;
     string line;
-    file.open("C:\\studia\\MO_lab1_2\\zad_2\\oneminexp_ref.txt");
+    file.open("C:\\studia\\MO_lab1_2\\lab_2\\oneminexp_ref.txt");
 
     int index = 0;
     double x;
@@ -98,13 +98,13 @@ int main() {
     build_input_arrays();
 
     ofstream approximate_result;
-    approximate_result.open("C:\\studia\\MO_lab1_2\\zad_2\\approximate_result.txt", ofstream::out);
+    approximate_result.open("C:\\studia\\MO_lab1_2\\lab_2\\approximate_result.txt", ofstream::out);
     ofstream fixed_result;
-    fixed_result.open("C:\\studia\\MO_lab1_2\\zad_2\\fixed_result.txt", ofstream::out);
+    fixed_result.open("C:\\studia\\MO_lab1_2\\lab_2\\fixed_result.txt", ofstream::out);
     ofstream relative_erros_approx;
-    relative_erros_approx.open("C:\\studia\\MO_lab1_2\\zad_2\\relative_erros_approx.txt", ofstream::out);
+    relative_erros_approx.open("C:\\studia\\MO_lab1_2\\lab_2\\relative_erros_approx.txt", ofstream::out);
     ofstream relative_erros_fixed;
-    relative_erros_fixed.open("C:\\studia\\MO_lab1_2\\zad_2\\relative_erros_fixed.txt", ofstream::out);
+    relative_erros_fixed.open("C:\\studia\\MO_lab1_2\\lab_2\\relative_erros_fixed.txt", ofstream::out);
 
     double ar, fr;
     for (int i = 0; i < X_NBR; i++) {

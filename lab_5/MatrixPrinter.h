@@ -5,11 +5,17 @@
 
 #include "iostream"
 #include "iomanip"
+#include "string"
 
+using namespace std;
 
 class MatrixPrinter {
+
+    static void printSeparator(int n);
 public:
-    static void printMatrix(double **m, int n);
+    static void printMatrix(double **m, const int *indexes, int n, const string& name);
+
+    static void printVector(const double *v, const int *indexes, int n, const string& name);
 };
 
 
