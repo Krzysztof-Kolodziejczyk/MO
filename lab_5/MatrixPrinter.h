@@ -15,6 +15,10 @@ class MatrixPrinter {
 public:
     static void printMatrix(double **m, const int *indexes, int n, const string& name);
 
+    static void printL(double **m, const int *indexes, int n, const string& name);
+
+    static void printU(double **m, const int *indexes, int n, const string& name);
+
     static void printVector(const double *v, const int *indexes, int n, const string& name);
 };
 

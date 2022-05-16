@@ -8,9 +8,47 @@ void MatrixPrinter::printMatrix(double **m, const int *indexes, int n, const str
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if(indexes == nullptr){
-                cout << "|" << setw(8) << ceil(m[i][j] * 1000.0) / 1000.0 << "   ";
+                cout << "|" << setw(8) << setprecision(5) << m[i][j] << "   ";
             }else{
-                cout << "|" << setw(8) << ceil(m[indexes[i]][j] * 1000.0) / 1000.0 << "   ";
+                cout << "|" << setw(8) << setprecision(5) << m[indexes[i]][j] << "   ";
+            }
+        }
+        cout << "|" << endl;
+        printSeparator(49);
+    }
+    cout << endl;
+}
+
+void MatrixPrinter::printL(double **m, const int *indexes, int n, const string &name) {
+    cout << name << endl;
+    printSeparator(49);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if(i == j){
+                cout << "|" << setw(8) << 1. << "   ";
+            }else if(i < j){
+                cout << "|" << setw(8) << 0. << "   ";
+            }
+            else{
+                cout << "|" << setw(8) << setprecision(5) << m[indexes[i]][j] << "   ";
+            }
+        }
+        cout << "|" << endl;
+        printSeparator(49);
+    }
+    cout << endl;
+}
+
+void MatrixPrinter::printU(double **m, const int *indexes, int n, const string &name) {
+    cout << name << endl;
+    printSeparator(49);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if(i > j){
+                cout << "|" << setw(8) << 0. << "   ";
+            }
+            else{
+                cout << "|" << setw(8) << setprecision(5) << m[indexes[i]][j] << "   ";
             }
         }
         cout << "|" << endl;
@@ -23,7 +61,12 @@ void MatrixPrinter::printVector(const double *v, const int *indexes, int n, cons
     cout << name << endl;
     printSeparator(49);
     for(int i=0; i<n; i++){
-        cout << "|" << setw(8) << ceil(v[indexes[i]] * 1000.0) / 1000.0 << "   ";
+        if(indexes != nullptr){
+            cout << "|" << setw(8) << setprecision(5) << v[indexes[i]] << "   ";
+        }else{
+            cout << "|" << setw(8) << setprecision(5) << v[i] << "   ";
+        }
+
     }
     cout << "|" << endl;
     printSeparator(49);
@@ -36,3 +79,4 @@ void MatrixPrinter::printSeparator(int n) {
     }
     cout << endl;
 }
+
