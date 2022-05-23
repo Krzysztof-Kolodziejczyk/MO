@@ -82,11 +82,11 @@ double conventional(int n) {
     Thomas::vectorB(thomasRes, bVector, n);
     auto xRes = Thomas::solve(thomasRes, bVector, n);
 
-    if(n == functionDataThreshold){
+    if (n == functionDataThreshold) {
         ofstream fileCon;
         fileCon.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\conFun.txt)");
         xi = startX;
-        for(int i=0; i<n; i++){
+        for (int i = 0; i < n; i++) {
             sendFunctionDataToFile(xi, xRes[i], analyticRes[i], fileCon);
             xi += h;
         }
@@ -99,8 +99,11 @@ double conventional(int n) {
     delete[] triDiagonal;
     delete[] bVector;
     delete[] thomasRes;
+    auto res = log10(fabs(maxFromVector(errors, n)));
+    delete[] errors;
+    delete[] analyticRes;
 
-    return log10(fabs(maxFromVector(errors, n)));
+    return res;
 
 }
 
@@ -143,11 +146,11 @@ double numerow(int n) {
     Thomas::vectorB(thomasRes, bVector, n);
     auto xRes = Thomas::solve(thomasRes, bVector, n);
 
-    if(n == functionDataThreshold){
+    if (n == functionDataThreshold) {
         ofstream fileCon;
         fileCon.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\numFun.txt)");
         xi = startX;
-        for(int i=0; i<n; i++){
+        for (int i = 0; i < n; i++) {
             sendFunctionDataToFile(xi, xRes[i], analyticRes[i], fileCon);
             xi += h;
         }
@@ -160,15 +163,18 @@ double numerow(int n) {
     delete[] triDiagonal;
     delete[] bVector;
     delete[] thomasRes;
+    auto res = log10(fabs(maxFromVector(errors, n)));
+    delete[] errors;
+    delete[] analyticRes;
 
-    return log10(fabs(maxFromVector(errors, n)));
+    return res;
 }
 
 int main() {
     ofstream fileCon, fileNum;
     fileCon.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\conErr.txt)");
     fileNum.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\numErr.txt)");
-    for (int i = 10; i < 30000; i += 50) {
+    for (int i = 10; i < 100000; i += 50) {
         fileCon << log10((endX - startX) / (i - 1)) << "\t" << conventional(i) << endl;
         fileNum << log10((endX - startX) / (i - 1)) << "\t" << numerow(i) << endl;
     }
