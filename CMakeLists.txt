@@ -19,3 +19,5 @@ add_subdirectory(lab_8)
 add_subdirectory(lab_9)
 
 add_subdirectory(lab_10)
+
+add_subdirectory(lab_11)

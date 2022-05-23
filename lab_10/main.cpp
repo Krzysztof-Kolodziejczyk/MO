@@ -86,26 +86,12 @@ double PMT() {
 int main() {
     ITERS = 10;
     ofstream file;
-    file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\BMEErrors.txt)");
+    file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\Errors.txt)");
     for(ITERS=10; ITERS<1.e6; ITERS+=1000){
-        file << log10(STOP / ITERS) << "\t" << log10(BME()) << endl;
+        file << log10(STOP / ITERS) << "\t" << log10(BME()) << "\t" << log10(PME()) << "\t" << log10(PMT()) << endl;
     }
     file.close();
 
-    ITERS = 10;
-    file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\PMEErrors.txt)");
-    for(ITERS=10; ITERS<1.e6; ITERS+=1000){
-        file << log10(STOP / ITERS) << "\t" << log10(PME()) << endl;
-    }
-
-    file.close();
-
-    ITERS = 10;
-    file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\PMTErrors.txt)");
-    for(ITERS=10; ITERS<1.e6; ITERS+=1000){
-        file << log10(STOP / ITERS) << "\t" << log10(PMT()) << endl;
-    }
-    file.close();
 //    cout << BME() << endl;
 //    cout << PME() << endl;
 //    cout << PMT() << endl;
