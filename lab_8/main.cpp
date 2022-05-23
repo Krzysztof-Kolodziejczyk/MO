@@ -74,6 +74,6 @@ void calculate() {
 }
 
 int main() {
-    calculate<double>();
+    calculate<float>();
     return 0;
 }
