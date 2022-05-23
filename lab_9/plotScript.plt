@@ -9,4 +9,4 @@ set xlabel 'log10(krok)'
 
 set grid
 plot \
- "conErr.txt" using 1:2 with lines title "Bledy - dyskretyzacja Trojpunktowa", 4*x, 2*x
+ "numErr.txt" using 1:2 with lines title "Bledy - dyskretyzacja Trojpunktowa", 4*x, 2*x

@@ -31,7 +31,7 @@ double **initTriDiagonalMatrix(int n) {
 }
 
 double maxFromVector(double *vector, int n) {
-    double max = 0.;
+    double max = fabs( vector[0] );
     for (int i = 0; i < n; i++) {
         if (fabs(vector[i]) > max) {
             max = vector[i];
@@ -109,7 +109,6 @@ double conventional(int n) {
 
 // n-liczba podziałów przedziału [0,1]
 double numerow(int n) {
-
     auto errors = new double[n];
     double h = (endX - startX) / (n - 1);
 
@@ -135,10 +134,10 @@ double numerow(int n) {
     double xi = startX;
     for (int i = 1; i < n - 1; i++) {
         xi += h;
-        triDiagonal[i][0] = px / (h * h) + rx / 12.;
-        triDiagonal[i][1] = (-2.0 * px) / (h * h) + rx * (10. / 12.);
-        triDiagonal[i][2] = px / (h * h) + rx / 12.;
-        bVector[i] = -1. * sx(xi - h) / 12. + -1. * (10. / 12.) * sx(xi) + -1. * sx(xi + h) / 12.;
+        triDiagonal[i][0] = 1. / (h * h) - 1. / 3.;
+        triDiagonal[i][1] = -2. / (h * h) - 10. / 3.;
+        triDiagonal[i][2] = 1. / (h * h) - 1. / 3.;
+        bVector[i] = (xi - h) / 12. + xi * (10. / 12.) + (xi + h) / 12.;
         analyticRes[i] = U(xi);
     }
 
@@ -157,7 +156,7 @@ double numerow(int n) {
     }
 
     for (int i = 0; i < n; i++) {
-        errors[i] = xRes[i] - analyticRes[i];
+        errors[i] = fabs(xRes[i] - analyticRes[i]);
     }
 
     delete[] triDiagonal;
@@ -174,7 +173,7 @@ int main() {
     ofstream fileCon, fileNum;
     fileCon.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\conErr.txt)");
     fileNum.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_9\numErr.txt)");
-    for (int i = 10; i < 100000; i += 50) {
+    for (int i = 10; i < 30000; i += 50) {
         fileCon << log10((endX - startX) / (i - 1)) << "\t" << conventional(i) << endl;
         fileNum << log10((endX - startX) / (i - 1)) << "\t" << numerow(i) << endl;
     }
