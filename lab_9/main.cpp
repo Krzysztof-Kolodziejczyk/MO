@@ -22,9 +22,9 @@ double U(double x) {
     return nominator / denominator;
 }
 
-double **initTriDiagonalMatrix(int n) {
-    auto triDiagonal = new double *[n];
-    for (int i = 0; i < n; i++) {
+double **init_triDiagonal_matrix(int n) {
+    auto triDiagonal = new double *[x_size];
+    for (int i = 0; i < x_size; i++) {
         triDiagonal[i] = new double[3];
     }
     return triDiagonal;
@@ -58,7 +58,7 @@ double conventional(int n) {
     bVector[0] = -1. * gamma;
     bVector[n - 1] = -1. * theta;
 
-    auto triDiagonal = initTriDiagonalMatrix(n);
+    auto triDiagonal = init_triDiagonal_matrix(n);
     // warunek brzegowy w x = 0
     triDiagonal[0][0] = NULL;
     triDiagonal[0][1] = beta - alfa / h;
@@ -120,7 +120,7 @@ double numerow(int n) {
     bVector[0] = -1. * gamma;
     bVector[n - 1] = -1. * theta;
 
-    auto triDiagonal = initTriDiagonalMatrix(n);
+    auto triDiagonal = init_triDiagonal_matrix(n);
     // warunek brzegowy w x = 0
     triDiagonal[0][0] = NULL;
     triDiagonal[0][1] = beta - alfa / h;

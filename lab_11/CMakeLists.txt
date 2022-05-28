@@ -4,4 +4,4 @@ project(MO_lab11)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(MO_lab11 main.cpp)
+add_executable(MO_lab11 main.cpp calerf.cpp calerf.h Thomas.cpp Thomas.h)
