@@ -5,6 +5,7 @@
 #include "cmath"
 #include "calerf.h"
 #include "Thomas.h"
+#include "LU.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ double D = 1.;
 int x_size_PMCN, t_size_PMCN;
 double KMB_lambda = 0.4;
 
-// parametry dla PMCN
+// parametry dla PMCN_THOMAS
 double PMCN_lambda = 0.5;
 
 void print_matrix(double **mat, int n, int m) {
@@ -53,6 +54,11 @@ double **init_matrix(int t_size, int x_size) {
     for (int i = 0; i < t_size; i++) {
         res[i] = new double[x_size];
     }
+    for (int i = 0; i < t_size; i++) {
+        for (int j = 0; j < x_size; j++) {
+            res[i][j] = 0.;
+        }
+    }
     return res;
 }
 
@@ -78,12 +84,10 @@ double calculate_absolute_error(double **approx_matrix, double **analytical_matr
     double current_error;
     for (int i = 0; i < x_size; i++) {
         current_error = fabs(analytical_matrix[t_size - 1][i] - approx_matrix[t_size - 1][i]);
-        cout << current_error << " ";
         if (current_error > max_error) {
             max_error = current_error;
         }
     }
-    cout << endl << endl << endl;
     return max_error;
 }
 
@@ -120,7 +124,7 @@ void KMB_method(double **matrix, double h) {
     }
 }
 
-// sekcja MPCN
+// sekcja MPCN THOMAS
 double **init_triDiagonal_matrix(int x_size) {
     auto triDiagonal = new double *[x_size];
     for (int i = 0; i < x_size; i++) {
@@ -138,9 +142,9 @@ void fill_triDiagonal_matrix(double **A, int x_size, double h) {
     // środkowa część macierzy
     double x_iteration = r + h;
     for (int i = 1; i < x_size - 1; i++) {
-        A[i][0] = (PMCN_lambda / 2.) * (-1. + ( h / x_iteration));
+        A[i][0] = (PMCN_lambda / 2.) * (-1. + (h / x_iteration));
         A[i][1] = 1. + PMCN_lambda;
-        A[i][2] = (PMCN_lambda / 2.) * (-1. - ( h / x_iteration));
+        A[i][2] = (PMCN_lambda / 2.) * (-1. - (h / x_iteration));
         x_iteration += h;
     }
 
@@ -155,19 +159,19 @@ double *init_and_fill_B_vector(double **matrix, int x_size, double h, double t, 
     auto *b = new double[x_size];
 
     // lewy warunek brzegowy
-    b[0] = matrix[k-1][0];
+    b[0] = matrix[k - 1][0];
 
     // srodkowa częśc wektora
     double x_iteration = r + h;
     for (int i = 1; i < x_size - 1; i++) {
         b[i] = (PMCN_lambda / 2.) * matrix[k - 1][i - 1] * (1. - (h / x_iteration))
-               + matrix[k-1][i] * (1. - PMCN_lambda)
+               + matrix[k - 1][i] * (1. - PMCN_lambda)
                + (PMCN_lambda / 2.) * matrix[k - 1][i + 1] * (1. + (h / x_iteration));
         x_iteration += h;
     }
 
     // prawy warunek brzegowy
-    b[x_size - 1] = matrix[k-1][x_size-1];
+    b[x_size - 1] = matrix[k - 1][x_size - 1];
 
     return b;
 }
@@ -175,20 +179,61 @@ double *init_and_fill_B_vector(double **matrix, int x_size, double h, double t, 
 void PMCN_method(double **matrix, double h, double dt, int t_size, int x_size) {
     auto A = init_triDiagonal_matrix(x_size);
     fill_triDiagonal_matrix(A, x_size, h);
-    auto x = Thomas::thomas(A, x_size);
+    auto matrixThomas = Thomas::thomas(A, x_size);
 
     double *b;
     double t_iteration = dt;
     for (int k = 1; k < t_size; k++) {
         b = init_and_fill_B_vector(matrix, x_size, h, t_iteration, k);
-        Thomas::vectorB(x, b, x_size);
-        auto u_result = Thomas::solve(x, b, x_size);
+        Thomas::vectorB(matrixThomas, b, x_size);
+        auto u_result = Thomas::solve(matrixThomas, b, x_size);
         for (int i = 1; i < x_size - 1; i++) {
             matrix[k][i] = u_result[i];
         }
         t_iteration += dt;
     }
 
+}
+
+// sekcja PMCN LU
+double **init_matrix_for_LU(int x_size, double h) {
+    double **res = init_matrix(x_size, x_size);
+
+    // lewy warunek brzegowy
+    res[0][0] = 1.;
+    res[0][1] = 0.;
+
+    // środkowa część macierzy
+    double x_iteration = r + h;
+    for (int i = 1; i < x_size - 1; i++) {
+        res[i][i - 1] = (PMCN_lambda / 2.) * (-1. + (h / x_iteration));
+        res[i][i] = 1. + PMCN_lambda;
+        res[i][i + 1] = (PMCN_lambda / 2.) * (-1. - (h / x_iteration));
+        x_iteration += h;
+    }
+
+    // prawy warunek brzegowy
+    res[x_size - 1][x_size - 2] = 0.;
+    res[x_size - 1][x_size - 1] = 1.;
+
+    return res;
+}
+
+void PMCN_LU_method(double **matrix, double h, double dt, int t_size, int x_size) {
+    auto A = init_matrix_for_LU(x_size, h);
+    auto indexes = LU::gauss(A, x_size);
+
+    double *b;
+    double t_iteration = dt;
+    for (int k = 1; k < t_size; k++) {
+        b = init_and_fill_B_vector(matrix, x_size, h, t_iteration, k);
+        LU::vectorB(b, A, indexes, x_size);
+        auto u_result = LU::solve(A, b, indexes, x_size);
+        for (int i = 1; i < x_size - 1; i++) {
+            matrix[k][i] = u_result[i];
+        }
+        t_iteration += dt;
+    }
 }
 
 
@@ -222,7 +267,7 @@ void KMB() {
     KMB_error_file.close();
 }
 
-void PMCN() {
+void PMCN_THOMAS() {
     double dt;
     ofstream PMCN_error_file;
     PMCN_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_error.txt)");
@@ -243,7 +288,6 @@ void PMCN() {
         PMCN_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
 
         auto pmcn_error = calculate_absolute_error(PMCN_matrix, PMCN_analytical_matrix, t_size_PMCN, x_size_PMCN);
-        cout << pmcn_error << endl;
 
         save(PMCN_error_file, log10(h), log10(pmcn_error));
 
@@ -252,8 +296,37 @@ void PMCN() {
     PMCN_error_file.close();
 }
 
+void PMCN_LU() {
+    double dt;
+    ofstream PMCN_LU_error_file;
+    PMCN_LU_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error.txt)");
+    double **PMCN_LU_matrix;
+    double **PMCN_LU_analytical_matrix;
+
+    for (double h = 0.5; h > 0.01; h -= 0.01) {
+        dt = (h * h) * PMCN_lambda;
+
+        t_size_PMCN = floor(t_max / dt);
+        x_size_PMCN = floor(a / h);
+
+        PMCN_LU_matrix = init_matrix(t_size_PMCN, x_size_PMCN);
+        init_matrix_with_conditions(PMCN_LU_matrix, t_size_PMCN, x_size_PMCN, dt, h);
+
+        PMCN_LU_method(PMCN_LU_matrix, h, dt, t_size_PMCN, x_size_PMCN);
+
+        PMCN_LU_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
+
+        auto pmcn_lu_error = calculate_absolute_error(PMCN_LU_matrix, PMCN_LU_analytical_matrix, t_size_PMCN, x_size_PMCN);
+
+        save(PMCN_LU_error_file, log10(h), log10(pmcn_lu_error));
+
+    }
+
+    PMCN_LU_error_file.close();
+}
+
 
 int main() {
-    PMCN();
+    PMCN_LU();
 }
 
