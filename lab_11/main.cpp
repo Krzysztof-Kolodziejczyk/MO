@@ -19,7 +19,7 @@ int x_size_PMCN, t_size_PMCN;
 double KMB_lambda = 0.4;
 
 // parametry dla PMCN
-double PMCN_lambda = 1.;
+double PMCN_lambda = 0.5;
 
 void print_matrix(double **mat, int n, int m) {
     for (int i = 0; i < n; i++) {
@@ -78,10 +78,12 @@ double calculate_absolute_error(double **approx_matrix, double **analytical_matr
     double current_error;
     for (int i = 0; i < x_size; i++) {
         current_error = fabs(analytical_matrix[t_size - 1][i] - approx_matrix[t_size - 1][i]);
+        cout << current_error << " ";
         if (current_error > max_error) {
             max_error = current_error;
         }
     }
+    cout << endl << endl << endl;
     return max_error;
 }
 
@@ -136,9 +138,9 @@ void fill_triDiagonal_matrix(double **A, int x_size, double h) {
     // środkowa część macierzy
     double x_iteration = r + h;
     for (int i = 1; i < x_size - 1; i++) {
-        A[i][0] = (PMCN_lambda / 2.) * (-1. + h / x_iteration);
+        A[i][0] = (PMCN_lambda / 2.) * (-1. + ( h / x_iteration));
         A[i][1] = 1. + PMCN_lambda;
-        A[i][2] = (PMCN_lambda / 2.) * (-1. - h / 2.);
+        A[i][2] = (PMCN_lambda / 2.) * (-1. - ( h / x_iteration));
         x_iteration += h;
     }
 
@@ -153,19 +155,19 @@ double *init_and_fill_B_vector(double **matrix, int x_size, double h, double t, 
     auto *b = new double[x_size];
 
     // lewy warunek brzegowy
-    b[0] = left_boundary_cond(t);
+    b[0] = matrix[k-1][0];
 
     // srodkowa częśc wektora
     double x_iteration = r + h;
     for (int i = 1; i < x_size - 1; i++) {
-        b[i] = (PMCN_lambda / 2.) * matrix[k - 1][i - 1] * (1. - h / x_iteration)
+        b[i] = (PMCN_lambda / 2.) * matrix[k - 1][i - 1] * (1. - (h / x_iteration))
                + matrix[k-1][i] * (1. - PMCN_lambda)
-               + (PMCN_lambda / 2.) * matrix[k - 1][i + 1] * (1. + h / x_iteration);
+               + (PMCN_lambda / 2.) * matrix[k - 1][i + 1] * (1. + (h / x_iteration));
         x_iteration += h;
     }
 
     // prawy warunek brzegowy
-    b[x_size - 1] = right_boundary_cond(t);
+    b[x_size - 1] = matrix[k-1][x_size-1];
 
     return b;
 }
@@ -173,14 +175,14 @@ double *init_and_fill_B_vector(double **matrix, int x_size, double h, double t, 
 void PMCN_method(double **matrix, double h, double dt, int t_size, int x_size) {
     auto A = init_triDiagonal_matrix(x_size);
     fill_triDiagonal_matrix(A, x_size, h);
-    Thomas::thomas(A, x_size);
+    auto x = Thomas::thomas(A, x_size);
 
     double *b;
     double t_iteration = dt;
     for (int k = 1; k < t_size; k++) {
         b = init_and_fill_B_vector(matrix, x_size, h, t_iteration, k);
-        Thomas::vectorB(A, b, x_size);
-        auto u_result = Thomas::solve(A, b, x_size);
+        Thomas::vectorB(x, b, x_size);
+        auto u_result = Thomas::solve(x, b, x_size);
         for (int i = 1; i < x_size - 1; i++) {
             matrix[k][i] = u_result[i];
         }
@@ -191,7 +193,7 @@ void PMCN_method(double **matrix, double h, double dt, int t_size, int x_size) {
 
 
 // MAIN METHODS
-void KMB(){
+void KMB() {
     double dt;
     ofstream KMB_error_file;
     KMB_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error.txt)");
@@ -220,7 +222,7 @@ void KMB(){
     KMB_error_file.close();
 }
 
-void PMCN(){
+void PMCN() {
     double dt;
     ofstream PMCN_error_file;
     PMCN_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_error.txt)");
@@ -236,13 +238,14 @@ void PMCN(){
         PMCN_matrix = init_matrix(t_size_PMCN, x_size_PMCN);
         init_matrix_with_conditions(PMCN_matrix, t_size_PMCN, x_size_PMCN, dt, h);
 
-        PMCN_method(PMCN_matrix, h,dt, t_size_PMCN, x_size_PMCN);
+        PMCN_method(PMCN_matrix, h, dt, t_size_PMCN, x_size_PMCN);
 
         PMCN_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
 
-        auto kmb_error = calculate_absolute_error(PMCN_matrix, PMCN_analytical_matrix, t_size_PMCN, x_size_PMCN);
+        auto pmcn_error = calculate_absolute_error(PMCN_matrix, PMCN_analytical_matrix, t_size_PMCN, x_size_PMCN);
+        cout << pmcn_error << endl;
 
-        save(PMCN_error_file, log10(h), log10(kmb_error));
+        save(PMCN_error_file, log10(h), log10(pmcn_error));
 
     }
 
