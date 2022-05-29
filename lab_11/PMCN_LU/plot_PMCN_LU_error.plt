@@ -8,4 +8,4 @@ set xlabel 'log10(h)'
 set grid
 plot \
  "PMCN_LU_error.txt" using 1:2 with points pt 1 lc 10 title "PMCN LU",\
-  "PMCN_LU_error.txt" using 1:2 with lines title "PMCN_THOMAS LU", 2 *x
+  "PMCN_LU_error.txt" using 1:2 with lines title "PMCN_THOMAS LU", 2 *x, x

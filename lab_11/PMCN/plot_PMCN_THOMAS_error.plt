@@ -7,5 +7,4 @@ set ylabel 'log10(error)'
 set xlabel 'log10(h)'
 set grid
 plot \
- "PMCN_THOMAS_error.txt" using 1:2 with points pt 1 lc 10 title "KMB",\
-  "PMCN__THOMAS_error.txt" using 1:2 with lines title "KMB", 2 *x
+ "PMCN_THOMAS_error.txt" using 1:2 with linespoint title "log10(error)",2 *x
