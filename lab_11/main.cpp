@@ -16,7 +16,7 @@ double a = 10.;
 double D = 1.;
 
 // parametry dla KMB
-int x_size_PMCN, t_size_PMCN;
+int x_size, t_size;
 double KMB_lambda = 0.4;
 
 // parametry dla PMCN_THOMAS
@@ -100,9 +100,9 @@ double **analytical_solution_KMB_matrix(int t_size, int x_size, double dt, doubl
     auto res = init_matrix(t_size, x_size);
     double t_iterator = 0.;
     double x_iterator;
-    for (int it = 0; it < t_size_PMCN; it++) {
+    for (int it = 0; it < t_size; it++) {
         x_iterator = r;
-        for (int ih = 0; ih < x_size_PMCN; ih++) {
+        for (int ih = 0; ih < x_size; ih++) {
             res[it][ih] = analytical_solution(x_iterator, t_iterator);
             x_iterator += h;
         }
@@ -113,9 +113,9 @@ double **analytical_solution_KMB_matrix(int t_size, int x_size, double dt, doubl
 
 void KMB_method(double **matrix, double h) {
     double x_iterator;
-    for (int it = 1; it < t_size_PMCN; it++) {
+    for (int it = 1; it < t_size; it++) {
         x_iterator = r + h;
-        for (int ih = 1; ih < x_size_PMCN - 1; ih++) {
+        for (int ih = 1; ih < x_size - 1; ih++) {
             matrix[it][ih] = KMB_lambda * matrix[it - 1][ih - 1] * (1. - (h / x_iterator))
                              + matrix[it - 1][ih] * (1. - (2. * KMB_lambda))
                              + KMB_lambda * matrix[it - 1][ih + 1] * (1. + (h / x_iterator));
@@ -238,95 +238,183 @@ void PMCN_LU_method(double **matrix, double h, double dt, int t_size, int x_size
 
 
 // MAIN METHODS
-void KMB() {
+void KMB(double start_h, double stop_h, double step, const string &file_path, bool error_case, bool analytical_case) {
     double dt;
-    ofstream KMB_error_file;
-    KMB_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error.txt)");
+    ofstream file;
+    file.open(file_path);
     double **KMB_matrix;
     double **KMB_analytical_matrix;
 
-    for (double h = 0.5; h > 0.01; h -= 0.01) {
+    for (double h = start_h; h >= stop_h; h -= step) {
+
+        // couting section
         dt = (h * h) * KMB_lambda;
-
-        t_size_PMCN = floor(t_max / dt);
-        x_size_PMCN = floor(a / h);
-
-        KMB_matrix = init_matrix(t_size_PMCN, x_size_PMCN);
-        init_matrix_with_conditions(KMB_matrix, t_size_PMCN, x_size_PMCN, dt, h);
-
+        t_size = floor(t_max / dt);
+        x_size = floor(a / h);
+        KMB_matrix = init_matrix(t_size, x_size);
+        init_matrix_with_conditions(KMB_matrix, t_size, x_size, dt, h);
         KMB_method(KMB_matrix, h);
+        KMB_analytical_matrix = analytical_solution_KMB_matrix(t_size, x_size, dt, h);
 
-        KMB_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
-
-        auto kmb_error = calculate_absolute_error(KMB_matrix, KMB_analytical_matrix, t_size_PMCN, x_size_PMCN);
-
-        save(KMB_error_file, log10(h), log10(kmb_error));
-
+        if (error_case) {
+            auto kmb_error = calculate_absolute_error(KMB_matrix, KMB_analytical_matrix, t_size, x_size);
+            save(file, log10(h), log10(kmb_error));
+        }
+        if (analytical_case) {
+            int t1 = t_size / 4;
+            double time_1 = t1 * dt;
+            int t2 = t_size / 2;
+            double time_2 = t2 * dt;
+            int t3 = t_size - 1;
+            double time_3 = t3 * dt;
+            file << "x \t ";
+            file << "analitycal w t = " << time_1 << "\t";
+            file << "KMB w t = " << time_1 << "\t";
+            file << "analitycal w t = " << time_2 << "\t";
+            file << "KMB w t = " << time_2 << "\t";
+            file << "analitycal w t = " << time_3 << "\t";
+            file << "KMB w t = " << time_3 << "\n";
+            double x_iteration = r;
+            for (int x = 0; x < x_size; x++) {
+                file << x_iteration << "\t" << KMB_analytical_matrix[t1][x] << "\t" << KMB_matrix[t1][x] << "\t"
+                     << KMB_analytical_matrix[t2][x] << "\t" << KMB_matrix[t2][x] << "\t"
+                     << KMB_analytical_matrix[t3][x] << "\t" << KMB_matrix[t3][x] << "\n";
+                x_iteration += h;
+            }
+        }
     }
 
-    KMB_error_file.close();
+    delete[] KMB_matrix;
+    delete[] KMB_analytical_matrix;
+
+    file.close();
 }
 
-void PMCN_THOMAS() {
+void PMCN_THOMAS(double start_h, double stop_h, double step, const string &file_path, bool error_case,
+                 bool analytical_case) {
     double dt;
-    ofstream PMCN_error_file;
-    PMCN_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_error.txt)");
+    ofstream file;
+    file.open(file_path);
     double **PMCN_matrix;
     double **PMCN_analytical_matrix;
 
-    for (double h = 0.5; h > 0.01; h -= 0.01) {
+    for (double h = start_h; h >= stop_h; h -= step) {
+        // counting section
         dt = (h * h) * PMCN_lambda;
+        t_size = floor(t_max / dt);
+        x_size = floor(a / h);
+        PMCN_matrix = init_matrix(t_size, x_size);
+        init_matrix_with_conditions(PMCN_matrix, t_size, x_size, dt, h);
+        PMCN_method(PMCN_matrix, h, dt, t_size, x_size);
+        PMCN_analytical_matrix = analytical_solution_KMB_matrix(t_size, x_size, dt, h);
 
-        t_size_PMCN = floor(t_max / dt);
-        x_size_PMCN = floor(a / h);
-
-        PMCN_matrix = init_matrix(t_size_PMCN, x_size_PMCN);
-        init_matrix_with_conditions(PMCN_matrix, t_size_PMCN, x_size_PMCN, dt, h);
-
-        PMCN_method(PMCN_matrix, h, dt, t_size_PMCN, x_size_PMCN);
-
-        PMCN_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
-
-        auto pmcn_error = calculate_absolute_error(PMCN_matrix, PMCN_analytical_matrix, t_size_PMCN, x_size_PMCN);
-
-        save(PMCN_error_file, log10(h), log10(pmcn_error));
-
+        if (error_case) {
+            auto pmcn_error = calculate_absolute_error(PMCN_matrix, PMCN_analytical_matrix, t_size, x_size);
+            save(file, log10(h), log10(pmcn_error));
+        }
+        if (analytical_case) {
+            int t1 = t_size / 4;
+            double time_1 = t1 * dt;
+            int t2 = t_size / 2;
+            double time_2 = t2 * dt;
+            int t3 = t_size - 1;
+            double time_3 = t3 * dt;
+            file << "x \t ";
+            file << "analitycal w t = " << time_1 << "\t";
+            file << "PCMN_THOMAS w t = " << time_1 << "\t";
+            file << "analitycal w t = " << time_2 << "\t";
+            file << "PCMN_THOMAS w t = " << time_2 << "\t";
+            file << "analitycal w t = " << time_3 << "\t";
+            file << "PCMN_THOMAS w t = " << time_3 << "\n";
+            double x_iteration = r;
+            for (int x = 0; x < x_size; x++) {
+                file << x_iteration << "\t" << PMCN_analytical_matrix[t1][x] << "\t" << PMCN_matrix[t1][x] << "\t"
+                     << PMCN_analytical_matrix[t2][x] << "\t" << PMCN_matrix[t2][x] << "\t"
+                     << PMCN_analytical_matrix[t3][x] << "\t" << PMCN_matrix[t3][x] << "\n";
+                x_iteration += h;
+            }
+        }
     }
 
-    PMCN_error_file.close();
+    file.close();
 }
 
-void PMCN_LU() {
+void PMCN_LU(double start_h, double stop_h, double step, const string &file_path, bool error_case,
+             bool analytical_case) {
     double dt;
-    ofstream PMCN_LU_error_file;
-    PMCN_LU_error_file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error.txt)");
+    ofstream file;
+    file.open(file_path);
     double **PMCN_LU_matrix;
     double **PMCN_LU_analytical_matrix;
 
-    for (double h = 0.5; h > 0.01; h -= 0.01) {
+    for (double h = start_h; h >= stop_h; h -= step) {
+        // calculation sectino
         dt = (h * h) * PMCN_lambda;
+        t_size = floor(t_max / dt);
+        x_size = floor(a / h);
+        PMCN_LU_matrix = init_matrix(t_size, x_size);
+        init_matrix_with_conditions(PMCN_LU_matrix, t_size, x_size, dt, h);
+        PMCN_LU_method(PMCN_LU_matrix, h, dt, t_size, x_size);
+        PMCN_LU_analytical_matrix = analytical_solution_KMB_matrix(t_size, x_size, dt, h);
 
-        t_size_PMCN = floor(t_max / dt);
-        x_size_PMCN = floor(a / h);
+        if (error_case) {
+            auto pmcn_lu_error = calculate_absolute_error(PMCN_LU_matrix, PMCN_LU_analytical_matrix, t_size, x_size);
+            save(file, log10(h), log10(pmcn_lu_error));
+        }
+        if (analytical_case) {
+            int t1 = t_size / 4;
+            double time_1 = t1 * dt;
+            int t2 = t_size / 2;
+            double time_2 = t2 * dt;
+            int t3 = t_size - 1;
+            double time_3 = t3 * dt;
+            file << "x \t ";
+            file << "analitycal w t = " << time_1 << "\t";
+            file << "PCMN_LU w t = " << time_1 << "\t";
+            file << "analitycal w t = " << time_2 << "\t";
+            file << "PCMN_LU w t = " << time_2 << "\t";
+            file << "analitycal w t = " << time_3 << "\t";
+            file << "PCMN_LU w t = " << time_3 << "\n";
+            double x_iteration = r;
+            for (int x = 0; x < x_size; x++) {
+                file << x_iteration << "\t" << PMCN_LU_analytical_matrix[t1][x] << "\t" << PMCN_LU_matrix[t1][x] << "\t"
+                     << PMCN_LU_analytical_matrix[t2][x] << "\t" << PMCN_LU_matrix[t2][x] << "\t"
+                     << PMCN_LU_analytical_matrix[t3][x] << "\t" << PMCN_LU_matrix[t3][x] << "\n";
+                x_iteration += h;
+            }
+        }
 
-        PMCN_LU_matrix = init_matrix(t_size_PMCN, x_size_PMCN);
-        init_matrix_with_conditions(PMCN_LU_matrix, t_size_PMCN, x_size_PMCN, dt, h);
-
-        PMCN_LU_method(PMCN_LU_matrix, h, dt, t_size_PMCN, x_size_PMCN);
-
-        PMCN_LU_analytical_matrix = analytical_solution_KMB_matrix(t_size_PMCN, x_size_PMCN, dt, h);
-
-        auto pmcn_lu_error = calculate_absolute_error(PMCN_LU_matrix, PMCN_LU_analytical_matrix, t_size_PMCN, x_size_PMCN);
-
-        save(PMCN_LU_error_file, log10(h), log10(pmcn_lu_error));
 
     }
 
-    PMCN_LU_error_file.close();
+    file.close();
 }
 
 
 int main() {
-    PMCN_LU();
+    // błedy KMB w odniesiu do h
+    //KMB(0.5, 0.01, 0.01, "C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error.txt", true, false);
+
+    // rozwiązania analityczne i KMB dla dobrej dokładności
+    //KMB(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\KMB_analytical.txt)", false, true);
+
+
+
+
+    // błedy PMCN THOMS w odniesieniu do h
+    //PMCN_THOMAS(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_error.txt)", true, false);
+
+    // rozwiązania analityczne i PMCN THOMS dla dobrej dokładności
+    //PMCN_THOMAS(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_functions.txt)", false, true);
+
+
+
+
+    // błedy PMCN LU w odniesiu do h
+    //PMCN_LU(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error.txt)", true, false);
+
+    // rozwiązania analityczne i PMCN LU dla dobrej dokładności
+    //PMCN_LU(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_functions.txt)", false, true);
+
 }
 
