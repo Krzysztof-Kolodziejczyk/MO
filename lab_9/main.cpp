@@ -23,8 +23,8 @@ double U(double x) {
 }
 
 double **init_triDiagonal_matrix(int n) {
-    auto triDiagonal = new double *[x_size];
-    for (int i = 0; i < x_size; i++) {
+    auto triDiagonal = new double *[n];
+    for (int i = 0; i < n; i++) {
         triDiagonal[i] = new double[3];
     }
     return triDiagonal;

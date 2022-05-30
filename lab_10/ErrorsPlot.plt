@@ -11,6 +11,6 @@ set datafile separator whitespace
 
 set grid
 
-plot "Errors.txt" using 1:2 title "BME" with linespoints ls 1, \
+plot "Errors.txt" using 1:2 title "BME" with linespoints ls 3, \
     "Errors.txt" using 1:3 title "PME" with linespoints ls 2, \
     "Errors.txt" using 1:4 title "PMT" with linespoints ls 1, x, 2*x

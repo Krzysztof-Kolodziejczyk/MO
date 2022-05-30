@@ -11,5 +11,5 @@ set datafile separator whitespace
 
 set grid
 
-plot "PMT.txt" using 1:2 title "y(t) approx" with linespoints ls 1, \
+plot "PMT.txt" using 1:2 every 10 title "y(t) approx" with points ls 1, \
      "PMT.txt" using 1:3 title "analytical" with lines ls 2

@@ -20,7 +20,7 @@ int x_size, t_size;
 double KMB_lambda = 0.4;
 
 // parametry dla PMCN_THOMAS
-double PMCN_lambda = 0.5;
+double PMCN_lambda = 1.;
 
 void print_matrix(double **mat, int n, int m) {
     for (int i = 0; i < n; i++) {
@@ -83,7 +83,7 @@ double calculate_absolute_error(double **approx_matrix, double **analytical_matr
     double max_error = 0.;
     double current_error;
     for (int i = 0; i < x_size; i++) {
-        current_error = fabs(analytical_matrix[lvl][i] - approx_matrix[lvl][i]);
+        current_error = fabs(analytical_matrix[i][lvl] - approx_matrix[i][lvl]);
         if (current_error > max_error) {
             max_error = current_error;
         }
@@ -276,10 +276,12 @@ void KMB(double start_h, double stop_h, double step, const string &file_path, bo
             file << "analitycal w t = " << time_3 << "\t";
             file << "KMB w t = " << time_3 << "\n";
             double x_iteration = r;
-            for (int x = 0; x < x_size; x++) {
-                file << x_iteration << "\t" << KMB_analytical_matrix[t1][x] << "\t" << KMB_matrix[t1][x] << "\t"
-                     << KMB_analytical_matrix[t2][x] << "\t" << KMB_matrix[t2][x] << "\t"
-                     << KMB_analytical_matrix[t3][x] << "\t" << KMB_matrix[t3][x] << "\n";
+            for (int x = 1; x < x_size; x++) {
+//                file << x_iteration << "\t" << KMB_analytical_matrix[t1][x] << "\t" << KMB_matrix[t1][x] << "\t"
+//                     << KMB_analytical_matrix[t2][x] << "\t" << KMB_matrix[t2][x] << "\t"
+//                     << KMB_analytical_matrix[t3][x] << "\t" << KMB_matrix[t3][x] << "\n";
+                auto error = calculate_absolute_error(KMB_matrix, KMB_analytical_matrix, t_size, x_size, x);
+                file << x_iteration << "\t" << log10(error) << "\n";
                 x_iteration += h;
             }
         }
@@ -421,38 +423,38 @@ void PMCN_LU(double start_h, double stop_h, double step, const string &file_path
 
 
 int main() {
-    // błedy KMB w odniesiu do h
-    //KMB(0.5, 0.01, 0.01, "C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error.txt", true, false);
+    //błedy KMB w odniesiu do h
+    //KMB(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error.txt)", true, false, false);
 
-    // rozwiązania analityczne i KMB dla dobrej dokładności
-    //KMB(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\KMB_analytical.txt)", false, true);
-
-    // błedy KMB w odniesieniu do t
-    //KMB(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error_time.txt)", false, false, true);
-
-
-
-
-    // błedy PMCN THOMAS w odniesieniu do h
-    //PMCN_THOMAS(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_error.txt)", true, false);
-
-    // rozwiązania analityczne i PMCN THOMS dla dobrej dokładności
-    //PMCN_THOMAS(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_functions.txt)", false, true);
-
-    // błedy PMCN THOMAS w odniesieniu do t
-    //PMCN_THOMAS(0.005, 0.005, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_error_time.txt)", false, false, true);
-
-
-
-
-    // błedy PMCN LU w odniesiu do h
-    //PMCN_LU(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error.txt)", true, false);
-
-    // rozwiązania analityczne i PMCN LU dla dobrej dokładności
-    //PMCN_LU(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_functions.txt)", false, true);
-
-    // błedy PMCN LU w odniesieniu do t
-    PMCN_LU(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error_time.txt)", false, false, true);
+//     //rozwiązania analityczne i KMB dla dobrej dokładności
+    KMB(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\tmp.txt)", false, true, false);
+//
+//     //błedy KMB w odniesieniu do t
+//    KMB(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\KMB\KMB_error_time.txt)", false, false, true);
+//
+//
+//
+//
+//     //błedy PMCN THOMAS w odniesieniu do h
+//    PMCN_THOMAS(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_error.txt)", true, false, false);
+//
+//     //rozwiązania analityczne i PMCN THOMS dla dobrej dokładności
+//    PMCN_THOMAS(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_functions.txt)", false, true, false);
+//
+//     //błedy PMCN THOMAS w odniesieniu do t
+//    PMCN_THOMAS(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN\PMCN_THOMAS_error_time.txt)", false, false, true);
+//
+//
+//
+//
+//     //błedy PMCN LU w odniesiu do h
+//    PMCN_LU(0.5, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error.txt)", true, false, false);
+//
+//     //rozwiązania analityczne i PMCN LU dla dobrej dokładności
+//    PMCN_LU(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_functions.txt)", false, true, false);
+//
+//     //błedy PMCN LU w odniesieniu do t
+//   PMCN_LU(0.01, 0.01, 0.01, R"(C:\studia\sem4\MO\MO_lab1_2\lab_11\PMCN_LU\PMCN_LU_error_time.txt)", false, false, true);
 
 }
 

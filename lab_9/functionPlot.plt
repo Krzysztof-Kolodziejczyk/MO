@@ -11,5 +11,6 @@ set datafile separator whitespace
 
 set grid
 
-plot "numFun.txt" using 1:2 title "U(x) true" with linespoints ls 1, \
-     "numFun.txt" using 1:3 title "Ux approx" with linespoints ls 2
+plot "numFun.txt" using 1:2 title "U(x) analytical" with lines, \
+     "numFun.txt" using 1:3 every 3 title "Ux approx numerow" with points ls 4,\
+     "conFun.txt" using 1:2 every 3 title "Ux approx conventional" with points ls 3,\

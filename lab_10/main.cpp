@@ -7,7 +7,7 @@
 using namespace std;
 
 double STOP = 1.;
-double ITERS = 1000.;
+double ITERS = 7.;
 
 double fAnalytic(double t) {
     return 1. - exp(-10. * (t + atan(t)));
@@ -17,14 +17,16 @@ double BME() {
     double dt = STOP / ITERS;
     double analytic_result, t = 0, maxError = 0, error;
     double y = 0.;
-    //ofstream file;
-    //file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\BME.txt)");
+    ofstream file;
+    //file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\BME_stable.txt)");
+
+    file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\BME_unstable.txt)");
 
     while(t < STOP){
         analytic_result = fAnalytic(t+dt);
         y = y -1.* (((10. * t * t) + 20.) / (t * t + 1)) * (y - 1) * dt;
         t += dt;
-        //file << t << "\t" << y << "\t" << analytic_result << endl;
+        file << t << "\t" << y << "\t" << analytic_result << endl;
         error = fabs(y - analytic_result);
         if (error > maxError)
             maxError = error;
@@ -88,7 +90,9 @@ int main() {
     ofstream file;
     file.open(R"(C:\studia\sem4\MO\MO_lab1_2\lab_10\Errors.txt)");
     for(ITERS=10; ITERS<1.e6; ITERS+=1000){
+        // errors
         file << log10(STOP / ITERS) << "\t" << log10(BME()) << "\t" << log10(PME()) << "\t" << log10(PMT()) << endl;
+
     }
     file.close();
 
