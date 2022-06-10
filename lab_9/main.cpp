@@ -44,7 +44,7 @@ void sendFunctionDataToFile(double xi, double approx, double analytic, ofstream 
     file << setprecision(16) << xi << "\t" << approx << "\t" << analytic << endl;
 }
 
-// n-liczba podziałów przedziału [0,1]
+// N-liczba podziałów przedziału [0,1]
 double conventional(int n) {
     double h = (endX - startX) / (n - 1);
 
@@ -107,7 +107,7 @@ double conventional(int n) {
 
 }
 
-// n-liczba podziałów przedziału [0,1]
+// N-liczba podziałów przedziału [0,1]
 double numerow(int n) {
     auto errors = new double[n];
     double h = (endX - startX) / (n - 1);

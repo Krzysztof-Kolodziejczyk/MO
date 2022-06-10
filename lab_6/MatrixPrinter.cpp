@@ -34,8 +34,8 @@ void MatrixPrinter::printVector(const double *v, const int *indexes, int n, cons
     cout << endl;
 }
 
-//void MatrixPrinter::printSeparator(int n) {
-//    for (int j = 0; j < n; j++) {
+//void MatrixPrinter::printSeparator(int N) {
+//    for (int j = 0; j < N; j++) {
 //        cout << "=";
 //    }
 //    cout << endl;

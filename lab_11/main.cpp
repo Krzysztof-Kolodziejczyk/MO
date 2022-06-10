@@ -279,7 +279,7 @@ void KMB(double start_h, double stop_h, double step, const string &file_path, bo
             for (int x = 1; x < x_size; x++) {
 //                file << x_iteration << "\t" << KMB_analytical_matrix[t1][x] << "\t" << KMB_matrix[t1][x] << "\t"
 //                     << KMB_analytical_matrix[t2][x] << "\t" << KMB_matrix[t2][x] << "\t"
-//                     << KMB_analytical_matrix[t3][x] << "\t" << KMB_matrix[t3][x] << "\n";
+//                     << KMB_analytical_matrix[t3][x] << "\t" << KMB_matrix[t3][x] << "\N";
                 auto error = calculate_absolute_error(KMB_matrix, KMB_analytical_matrix, t_size, x_size, x);
                 file << x_iteration << "\t" << log10(error) << "\n";
                 x_iteration += h;

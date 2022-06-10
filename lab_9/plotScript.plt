@@ -1,5 +1,5 @@
 #Wykres błedy
-set xrange [-8 : -0.5]
+set xrange [-5 : -0.5]
 set yrange [-15 : -3]
 set terminal png size 1366,768
 set output "Wykres_bledow.png"

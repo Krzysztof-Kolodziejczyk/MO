@@ -7,7 +7,7 @@
 using namespace std;
 
 double STOP = 1.;
-double ITERS = 7.;
+double ITERS = 1000.;
 
 double fAnalytic(double t) {
     return 1. - exp(-10. * (t + atan(t)));
